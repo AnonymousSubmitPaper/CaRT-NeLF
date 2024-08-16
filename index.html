@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Anonymous">
+  <meta name="keywords" content="Neural radiance fields, Novel view synthesis, Appearance embedding, Regularization">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CaRT - NeLF: Local core Appearance embedding with Regularization techniuques for Novel view synthesis</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+
+  <style>
+    .item-bicycle {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px; /* 비디오들 사이에 간격을 줍니다 */
+    }
+    .video-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .video-container video {
+        width: 300px;
+        height: 200px;
+    }
+    .label {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 5px;
+        padding: 5px 2px;
+    }
+
+    .item-comparison {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+  </style>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+</head>
+
+<!-- Image Comparison Slider -->
+<!-- https://github.com/sneas/img-comparison-slider -->
+<script defer src="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/index.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/styles.css" />
+
+<body>
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="navbar-menu">
+    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+      <a class="navbar-item" href="https://www.google.com/">
+      <span class="icon">
+          <i class="fas fa-home"></i>
+      </span>
+      </a>
+    </div>
+  </div>
+</nav>
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h2 class="title publication-title">🛒 CaRT - NeLF: Local core Appearance embedding with Regularization for Novel view synthesis</h2>
+          <!-- <h2 class="title is-1 publication-title"></h2> -->
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://www.google.com/">Anonymous</a>
+            </span>
+          </div>
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href="https://www.google.com"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper (Soon)</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://www.google.com"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code (Soon)</span>
+                  </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container is-max-desktop">
+    <div class="item item-bicycle">
+      <div class="video-container">
+        <video src="media/Stair_1.mp4" style="width : 300px; height: 200px;" autoplay muted loop></video>
+      </div>
+      <div class="video-container">
+        <video  id="kitti-video" src="media/Kitti_3.mp4" style="width : 300px; height: 200px;" autoplay muted loop></video>
+      </div>
+      <div class="video-container">
+        <video src="media/Sky_Free.mp4" style="width : 300px; height: 200px;" autoplay muted loop></video>
+      </div>
+    </div>
+    <p style="text-align: right; font-size: 13px;"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      * Please wait for a bit to load video.</p>
+</div>
+</section>
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          Recently, Neural Radiance Field(NeRF) is widely used for large-scale Novel view synthesis. However, as lightning variation or moving objects exist in the real world scenarios, existing methods tend to cause to floater or blur problems in novel view synthesis. To address these issues, we propose CaRT-NeLF, which harnesses local core appearance embedding with several regularization techniques. We optimize local core appearance embedding for each local core probe to mitigate floater or blur, and design aggregation module through empirical experiments to enrich multi-channel features. In addition to, we adapt several regularization to generalize unseen views. In particular, we regularize similar distributions of weight values among neighboring rays. Furthermore, we exploit lipshitz MLP to stabilize the training process. Through extensive experiments across small-scale and large-scale on several benchmark datasets, we demonstrate performance improvements of our method over existing approaches. The source code will be made publicly available.          
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="columns is-centered has-text-centered">
+  <div class="column is-four-fifths">
+    <h4 class="title is-4">Small-scale dataset</h4>
+  </div> 
+</div>
+<div class="item-comparison">
+  <div class="columns is-centered">
+    <img-comparison-slider style="width: 100%;" hover="hover" value="50">
+      <img slot="first" src="static/images/Small-Scale-Static/Bicycle_baseline.png" style="width : 300px; height: 200px;"  />
+      <img slot="second" src="static/images/Small-Scale-Static/Bicycle_Our.png" style="width : 300px; height: 200px;" />
+    </img-comparison-slider>
+  </div>
+  &nbsp;
+  &nbsp;
+  <div class="columns is-centered">
+    <img-comparison-slider style="width: 100%;" hover="hover" value="50">
+      <img slot="first" src="static/images/Small-Scale-Static/Sky_baseline.png" style="width : 300px; height: 200px;"  />
+      <img slot="second" src="static/images/Small-Scale-Static/Sky_Our.png" style="width : 300px; height: 200px;" />
+    </img-comparison-slider>
+  </div>
+  &nbsp;
+  &nbsp;
+  <div class="columns is-centered">
+    <img-comparison-slider style="width: 100%;" hover="hover" value="50">
+      <img slot="first" src="static/images/Small-Scale-Static/Stump_baseline.png" style="width : 300px; height: 200px;"  />
+      <img slot="second" src="static/images/Small-Scale-Static/Stump_our.png" style="width : 300px; height: 200px;" />
+    </img-comparison-slider>
+  </div>
+</div>
+<div class="columns is-centered has-text-centered">
+  <div class="column is-four-fifths">
+    <h4 class="title is-4">Large-scale dataset</h4>
+  </div> 
+</div>
+<div class="item-comparison">
+  <div class="columns is-centered has-text-centered">
+    <img-comparison-slider style="width: 100%;" hover="hover" value="50">
+      <img slot="first" src="static/images/Large-Scale-Static/56leonard_Baseline.png" style="width : 300px; height: 200px;"  />
+      <img slot="second" src="static/images/Large-Scale-Static/56leonard_Our.png" style="width : 300px; height: 200px;" />
+    </img-comparison-slider>
+  </div>
+  &nbsp;
+  &nbsp;
+  <div class="columns is-centered has-text-centered">
+    <img-comparison-slider style="width: 100%;" hover="hover" value="50">
+      <img slot="first" src="static/images/Large-Scale-Static/KiTTi_Baseline.png" style="width : 300px; height: 200px;"  />
+      <img slot="second" src="static/images/Large-Scale-Static/KiTTi_Our.png" style="width : 300px; height: 200px;" />
+    </img-comparison-slider>
+  </div>
+  &nbsp;
+  &nbsp;
+  <div class="columns is-centered has-text-centered">
+    <img-comparison-slider style="width: 100%;" hover="hover" value="50">
+      <img slot="first" src="static/images/Large-Scale-Static/Scoul_Baseline.png" style="width : 300px; height: 200px;"  />
+      <img slot="second" src="static/images/Large-Scale-Static/Scoul_Our.png" style="width : 300px; height: 200px;" />
+    </img-comparison-slider>
+  </div>
+</div>
+<br><br>
+<div class="container is-max-desktop">
+  <div class="columns is-centered has-text-centered">
+    <div class="column is-four-fifths">
+      <h2 class="title is-3">CaRT-NeLF Pipeline</h2>
+      <img width="100%" src="./static/images/CaRT-NeLF.png">
+      <br><br><b>
+        <div style="display: flex; justify-content: center; text-align: center; margin-bottom: 5px;"> Overall illustration of our framework. </div></b>
+      </b><br>
+      <div class="content has-text-justified">
+        <p>
+          Overview of CaRT-NeLF method. We project sampled points to encoded query factors from local and core factors. After factors aggregated, aggregated factors and view direction d are fed to the Lipshitz MLP. In particular, we design aggregation module to enrich features. We also adopt appearance embedding to alleviate floater. we optimize the appearance embedding for each core factor with z(t). CaRT-NeLF trained by reconstruction loss, Lkl and between rendered and target images.</a>.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+<br>
+  <br>
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column">
+        <h2 class="title is-3">Detail results.</h2>
+        <img width="90%" style="width : 500px; height: 400px;" src="./static/images/Free_MipNeRF.png"> <br><b>
+        <div style="display: flex; justify-content: center; text-align: center; margin-bottom: 5px;"></div></b>
+        <div class="content has-text-justified">
+        </div>
+      </div>
+      <div class="column">
+        <h2 class="title is-3">Visualization.</h2>
+        <img width="90%" style="width : 500px;" src="./static/images/Comparision_Full_mode.png"> <br><b>
+          <!-- <div style="display: flex; justify-content: center; text-align: center; margin-bottom: 5px;"></div></b> -->
+        <img width="90%" style="width : 500px; height: 150px;" src="./static/images/Comaprision_Figure.png"> <br><b>
+        <br>
+        <div class="content has-text-justified">
+        </div>
+      </div>
+      </div>
+    </div>
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@article{Anonymous,
+      title={CaRT - NeLF: Local core embedding with Regularization techniuques for Novel view synthesis},
+      author={Anonymous},
+      year={2024},
+    }</code></pre>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This website is licensed under a <a rel="license"
+                                                href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+          <p>
+            This means you are free to borrow the <a
+              href="https://github.com/nerfies/nerfies.github.io">source code</a> of this website,
+            we just ask that you link back to this page in the footer.
+            Please remember to remove the analytics code included in the header of the website which
+            you do not want on your website.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
